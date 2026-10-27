@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
 # Crea l'eseguibile
 qt_add_executable(ThunderPass
     ${PROJECT_SOURCES}
+    src/registerdialog.h src/registerdialog.cpp
+    src/registerdialog.ui
 )
 
 # Collega le librerie Qt

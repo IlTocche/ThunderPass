@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "registerdialog.h"
 #include "ui_mainwindow.h"
 
 #include <QScreen>
@@ -65,6 +66,6 @@ void MainWindow::onLoginClicked()
 
 void MainWindow::onCreateAccountClicked()
 {
-    QMessageBox::information(this, "Registrazione",
-                             "Qui più avanti apriremo la schermata di registrazione.");
+    RegisterDialog dialog(this);
+    dialog.exec();   // Apre la finestra di registrazione in modo modale
 }
