@@ -3,21 +3,22 @@
 
 #include <QScreen>
 #include <QStyle>
+#include <QMenuBar>
+#include <QStatusBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
 
-
+    // Titolo
     setWindowTitle("ThunderPass");
 
+    // Dimensioni fisse
+    setFixedSize(420, 520);
 
-    resize(920, 620);
-
-
+    // Centra la finestra
     setGeometry(
         QStyle::alignedRect(
             Qt::LeftToRight,
@@ -26,8 +27,11 @@ MainWindow::MainWindow(QWidget *parent)
             qApp->primaryScreen()->availableGeometry()
             )
         );
-}
 
+
+    menuBar()->hide();
+    statusBar()->hide();
+}
 
 MainWindow::~MainWindow()
 {
