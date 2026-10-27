@@ -23,7 +23,6 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
 RegisterDialog::~RegisterDialog()
 {
-    delete ui;
 }
 
 void RegisterDialog::onRegisterClicked()

@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <memory>
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -21,7 +23,7 @@ private slots:
     void onCreateAccountClicked();
 
 private:
-    Ui::MainWindow *ui;
+    std::unique_ptr< Ui::MainWindow > ui;
 };
 
 #endif // MAINWINDOW_H

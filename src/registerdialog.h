@@ -1,6 +1,8 @@
 #ifndef REGISTERDIALOG_H
 #define REGISTERDIALOG_H
 
+#include <memory>
+
 #include <QDialog>
 
 QT_BEGIN_NAMESPACE
@@ -20,7 +22,7 @@ private slots:
     void onBackToLoginClicked();
 
 private:
-    Ui::RegisterDialog *ui;
+    std::unique_ptr< Ui::RegisterDialog > ui;
 };
 
 #endif // REGISTERDIALOG_H
