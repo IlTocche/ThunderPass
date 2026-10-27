@@ -5,6 +5,7 @@
 #include <QStyle>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,13 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Titolo
     setWindowTitle("ThunderPass");
-
-    // Dimensioni fisse
     setFixedSize(420, 520);
 
-    // Centra la finestra
+
     setGeometry(
         QStyle::alignedRect(
             Qt::LeftToRight,
@@ -28,10 +26,45 @@ MainWindow::MainWindow(QWidget *parent)
             )
         );
 
+    menuBar()->hide();
+    statusBar()->hide();
 
+
+    connect(ui->loginButton, &QPushButton::clicked,
+            this, &MainWindow::onLoginClicked);
+
+
+    connect(ui->createAccountButton, &QPushButton::clicked,
+            this, &MainWindow::onCreateAccountClicked);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::onLoginClicked()
+{
+
+    QString email = ui->emailEdit->text().trimmed();
+    QString password = ui->passwordEdit->text();
+
+
+    if (email.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "Attenzione",
+                             "Inserisci email e password.");
+        return;
+    }
+
+
+    QMessageBox::information(this, "Login",
+                             "Tentativo di accesso con:\n" + email);
+}
+
+
+void MainWindow::onCreateAccountClicked()
+{
+    QMessageBox::information(this, "Registrazione",
+                             "Qui più avanti apriremo la schermata di registrazione.");
 }
