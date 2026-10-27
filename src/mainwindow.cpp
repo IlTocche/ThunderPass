@@ -4,8 +4,6 @@
 
 #include <QScreen>
 #include <QStyle>
-#include <QMenuBar>
-#include <QStatusBar>
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -26,10 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
             qApp->primaryScreen()->availableGeometry()
             )
         );
-
-    menuBar()->hide();
-    statusBar()->hide();
-
 
     connect(ui->loginButton, &QPushButton::clicked,
             this, &MainWindow::onLoginClicked);
