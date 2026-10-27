@@ -29,8 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
         );
 
 
-    menuBar()->hide();
-    statusBar()->hide();
 }
 
 MainWindow::~MainWindow()
