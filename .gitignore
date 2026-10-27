@@ -1,0 +1,35 @@
+# Cartella di build
+build/
+**/build/
+
+# File di Qt Creator
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+*.pro.user
+*.pro.user.*
+
+# File di compilazione
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# File temporanei Qt
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*_autogen/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Altri
+*.log
+*.tmp
+*~
