@@ -29,11 +29,14 @@ set(PROJECT_SOURCES
     src/registerdialog.cpp
     src/registerdialog.h
     src/registerdialog.ui
+    src/crypto.cpp
+    src/crypto.h
     resources/resources.qrc
 )
 
 qt_add_executable(ThunderPass
     ${PROJECT_SOURCES}
+    src/crypto.h src/crypto.cpp
 )
 
 target_link_libraries(ThunderPass PRIVATE
