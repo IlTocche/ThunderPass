@@ -2,6 +2,7 @@
 #include "ui_vaultwindow.h"
 #include "passwordentry.h"
 #include "addpassworddialog.h"
+#include "passworddetailsdialog.h"
 
 #include <QMessageBox>
 #include <QInputDialog>
@@ -24,6 +25,16 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
             this, &VaultWindow::onLogoutClicked);
 
     refreshList();
+
+    connect(ui->passwordList, &QListWidget::itemClicked,
+            this, [this](QListWidgetItem *item) {
+                int row = ui->passwordList->row(item);
+                const auto entries = m_vault->entries();
+                if (row >= 0 && row < entries.size()) {
+                    PasswordDetailsDialog dialog(entries.at(row), this);
+                    dialog.exec();
+                }
+            });
 }
 
 VaultWindow::~VaultWindow()
