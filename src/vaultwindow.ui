@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VaultWindow</class>
+ <widget class="QMainWindow" name="VaultWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ThunderPass</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QMainWindow, QWidget {
+    background-color: #1c1c1e;
+    color: #ffffff;
+    font-family: "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+QPushButton {
+    background-color: #0a84ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: #0071e3;
+}
+
+QPushButton#logoutButton {
+    background-color: transparent;
+    color: #ff453a;
+    font-weight: 500;
+}
+
+QPushButton#logoutButton:hover {
+    color: #ff6961;
+}
+
+QLabel#titleLabel {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+QLabel#subtitleLabel {
+    font-size: 13px;
+    color: #8e8e93;
+}
+
+QListWidget {
+    background-color: #2c2c2e;
+    border: 1px solid #3a3a3c;
+    border-radius: 10px;
+    padding: 8px;
+    color: #ffffff;
+    outline: none;
+}
+
+QListWidget::item {
+    padding: 12px;
+    border-radius: 6px;
+}
+
+QListWidget::item:selected {
+    background-color: #0a84ff;
+}
+   </string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="headerLayout">
+      <item>
+       <widget class="QLabel" name="titleLabel">
+        <property name="text">
+         <string>ThunderPass</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="headerSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addPasswordButton">
+        <property name="text">
+         <string>+ Aggiungi</string>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="logoutButton">
+        <property name="text">
+         <string>Esci</string>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="subtitleLabel">
+      <property name="text">
+       <string>Le tue password salvate</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="passwordList"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

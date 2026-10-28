@@ -40,6 +40,8 @@ qt_add_executable(ThunderPass
     ${PROJECT_SOURCES}
     src/crypto.h src/crypto.cpp
     src/authmanager.h src/authmanager.cpp
+    src/vaultwindow.h src/vaultwindow.cpp
+    src/vaultwindow.ui
 )
 
 target_link_libraries(ThunderPass PRIVATE

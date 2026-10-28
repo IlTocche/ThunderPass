@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "registerdialog.h"
 #include "ui_mainwindow.h"
+#include "vaultwindow.h"
 
 #include <QScreen>
 #include <QStyle>
@@ -49,9 +50,12 @@ void MainWindow::onLoginClicked()
     }
 
     if (m_auth.login(email, password)) {
-        QMessageBox::information(this, "Successo",
-                                 "Accesso effettuato!\nBenvenuto " + m_auth.currentUserEmail());
-        // Più avanti qui apriremo la schermata principale del password manager
+        // Apriamo la vault e nascondiamo il login
+        VaultWindow *vault = new VaultWindow(m_auth.currentUserEmail());
+        vault->setAttribute(Qt::WA_DeleteOnClose); // si cancella da sola quando chiusa
+        vault->show();
+
+        this->hide(); // nascondiamo la finestra di login
     } else {
         QMessageBox::critical(this, "Errore", "Email o password non corretti.");
     }
