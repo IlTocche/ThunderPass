@@ -2,8 +2,9 @@
 #define MAINWINDOW_H
 
 #include <memory>
-
 #include <QMainWindow>
+
+#include "authmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,12 +19,12 @@ public:
     ~MainWindow();
 
 private slots:
-
     void onLoginClicked();
     void onCreateAccountClicked();
 
 private:
-    std::unique_ptr< Ui::MainWindow > ui;
+    std::unique_ptr<Ui::MainWindow> ui;
+    AuthManager m_auth;   // Gestore autenticazione
 };
 
 #endif // MAINWINDOW_H

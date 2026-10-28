@@ -3,16 +3,16 @@
 
 #include <QMessageBox>
 
-RegisterDialog::RegisterDialog(QWidget *parent)
+RegisterDialog::RegisterDialog(AuthManager *authManager, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::RegisterDialog)
+    , m_auth(authManager)
 {
     ui->setupUi(this);
 
     setWindowTitle("ThunderPass - Crea account");
     setFixedSize(420, 560);
     setModal(true);
-
 
     connect(ui->registerButton, &QPushButton::clicked,
             this, &RegisterDialog::onRegisterClicked);
@@ -31,7 +31,6 @@ void RegisterDialog::onRegisterClicked()
     QString password = ui->passwordEdit->text();
     QString confirm = ui->confirmPasswordEdit->text();
 
-
     if (email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
         QMessageBox::warning(this, "Attenzione", "Compila tutti i campi.");
         return;
@@ -43,17 +42,23 @@ void RegisterDialog::onRegisterClicked()
     }
 
     if (password.length() < 8) {
-        QMessageBox::warning(this, "Attenzione", "La password deve avere almeno 8 caratteri.");
+        QMessageBox::warning(this, "Attenzione",
+                             "La password deve avere almeno 8 caratteri.");
         return;
     }
 
-    // Per ora solo messaggio (più avanti salveremo l'account)
-    QMessageBox::information(this, "Successo",
-                             "Account creato con successo!\n(funzionalità di salvataggio in arrivo)");
-    accept(); // Chiude la dialog
+    // Registrazione vera
+    if (m_auth->registerUser(email, password)) {
+        QMessageBox::information(this, "Successo",
+                                 "Account creato con successo!\nOra puoi accedere.");
+        accept();
+    } else {
+        QMessageBox::critical(this, "Errore",
+                              "Impossibile creare l'account.\nL'email è già registrata o si è verificato un errore.");
+    }
 }
 
 void RegisterDialog::onBackToLoginClicked()
 {
-    reject(); // Chiude la dialog e torna al login
+    reject();
 }
