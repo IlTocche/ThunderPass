@@ -42,6 +42,7 @@ qt_add_executable(ThunderPass
     src/authmanager.h src/authmanager.cpp
     src/vaultwindow.h src/vaultwindow.cpp
     src/vaultwindow.ui
+    src/passwordentry.h src/passwordentry.cpp
 
 )
 
