@@ -31,12 +31,15 @@ set(PROJECT_SOURCES
     src/registerdialog.ui
     src/crypto.cpp
     src/crypto.h
+    src/authmanager.cpp
+    src/authmanager.h
     resources/resources.qrc
 )
 
 qt_add_executable(ThunderPass
     ${PROJECT_SOURCES}
     src/crypto.h src/crypto.cpp
+    src/authmanager.h src/authmanager.cpp
 )
 
 target_link_libraries(ThunderPass PRIVATE
