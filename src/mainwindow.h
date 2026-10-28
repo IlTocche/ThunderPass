@@ -5,6 +5,7 @@
 #include <QMainWindow>
 
 #include "authmanager.h"
+#include "vaultmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,7 +25,8 @@ private slots:
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    AuthManager m_auth;   // Gestore autenticazione
+    AuthManager m_auth;
+    VaultManager m_vault;
 };
 
 #endif // MAINWINDOW_H

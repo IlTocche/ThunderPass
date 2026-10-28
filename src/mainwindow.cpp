@@ -49,16 +49,24 @@ void MainWindow::onLoginClicked()
         return;
     }
 
-    if (m_auth.login(email, password)) {
-        // Apriamo la vault e nascondiamo il login
-        VaultWindow *vault = new VaultWindow(m_auth.currentUserEmail());
-        vault->setAttribute(Qt::WA_DeleteOnClose); // si cancella da sola quando chiusa
-        vault->show();
-
-        this->hide(); // nascondiamo la finestra di login
-    } else {
+    // Prima autenticazione classica
+    if (!m_auth.login(email, password)) {
         QMessageBox::critical(this, "Errore", "Email o password non corretti.");
+        return;
     }
+
+    // Poi sblocchiamo il vault con la stessa password (master password)
+    if (!m_vault.unlock(email, password)) {
+        QMessageBox::critical(this, "Errore", "Impossibile sbloccare il vault.");
+        return;
+    }
+
+    // Tutto ok → apriamo la vault
+    VaultWindow *vaultWin = new VaultWindow(email, &m_vault);
+    vaultWin->setAttribute(Qt::WA_DeleteOnClose);
+    vaultWin->show();
+
+    this->hide();
 }
 
 void MainWindow::onCreateAccountClicked()
