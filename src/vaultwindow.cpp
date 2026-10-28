@@ -1,6 +1,7 @@
 #include "vaultwindow.h"
 #include "ui_vaultwindow.h"
 #include "passwordentry.h"
+#include "addpassworddialog.h"
 
 #include <QMessageBox>
 #include <QInputDialog>
@@ -45,37 +46,14 @@ void VaultWindow::refreshList()
 
 void VaultWindow::onAddPasswordClicked()
 {
-    // Per ora usiamo dei dialog semplici (dopo faremo una bella form)
-    bool ok;
-    QString title = QInputDialog::getText(this, "Nuova password",
-                                          "Titolo (es. Gmail, Netflix):",
-                                          QLineEdit::Normal, "", &ok);
-    if (!ok || title.trimmed().isEmpty()) return;
-
-    QString username = QInputDialog::getText(this, "Nuova password",
-                                             "Username / Email:",
-                                             QLineEdit::Normal, "", &ok);
-    if (!ok) return;
-
-    QString password = QInputDialog::getText(this, "Nuova password",
-                                             "Password:",
-                                             QLineEdit::Password, "", &ok);
-    if (!ok || password.isEmpty()) return;
-
-    QString url = QInputDialog::getText(this, "Nuova password",
-                                        "Sito web (opzionale):",
-                                        QLineEdit::Normal, "", &ok);
-
-    PasswordEntry entry = PasswordEntry::createNew(title.trimmed(),
-                                                   username.trimmed(),
-                                                   password,
-                                                   url.trimmed());
-
-    if (m_vault->addEntry(entry)) {
-        refreshList();
-        QMessageBox::information(this, "Successo", "Password salvata in modo cifrato!");
-    } else {
-        QMessageBox::critical(this, "Errore", "Impossibile salvare la password.");
+    AddPasswordDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) {
+        PasswordEntry entry = dialog.resultEntry();
+        if (m_vault->addEntry(entry)) {
+            refreshList();
+        } else {
+            QMessageBox::critical(this, "Errore", "Impossibile salvare la password.");
+        }
     }
 }
 
