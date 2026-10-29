@@ -8,6 +8,11 @@
 #include <QInputDialog>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QMenu>
+#include <QAction>
+#include <QClipboard>
+#include <QGuiApplication>
+#include "addpassworddialog.h"
 
 VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget *parent)
     : QMainWindow(parent)
@@ -62,6 +67,12 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
             this, &VaultWindow::onInactivityTimeout);
 
     resetInactivityTimer(); // avvia il timer
+
+
+    // Abilita il menu contestuale
+    ui->passwordList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->passwordList, &QListWidget::customContextMenuRequested,
+            this, &VaultWindow::onCustomContextMenu);
 }
 
 VaultWindow::~VaultWindow()
@@ -143,6 +154,81 @@ void VaultWindow::onSearchTextChanged(const QString &text)
                 display += "  •  " + entry.username();
             }
             ui->passwordList->addItem(display);
+        }
+    }
+}
+
+void VaultWindow::onCustomContextMenu(const QPoint &pos)
+{
+    QListWidgetItem *item = ui->passwordList->itemAt(pos);
+    if (!item) return;
+
+    int row = ui->passwordList->row(item);
+    const auto entries = m_vault->entries();
+    if (row < 0 || row >= entries.size()) return;
+
+    // Dobbiamo trovare l'entry corretta anche con la ricerca attiva
+    // Per semplicità ricarichiamo tutte e filtriamo
+    QString search = ui->searchEdit->text().trimmed().toLower();
+    QVector<PasswordEntry> visibleEntries;
+
+    for (const PasswordEntry &entry : entries) {
+        bool match = search.isEmpty()
+        || entry.title().toLower().contains(search)
+            || entry.username().toLower().contains(search)
+            || entry.url().toLower().contains(search);
+        if (match) {
+            visibleEntries.append(entry);
+        }
+    }
+
+    if (row >= visibleEntries.size()) return;
+    PasswordEntry entry = visibleEntries.at(row);
+
+    // Creiamo il menu
+    QMenu menu(this);
+
+    QAction *copyUserAction = menu.addAction("Copia username");
+    QAction *copyPassAction = menu.addAction("Copia password");
+    menu.addSeparator();
+    QAction *editAction = menu.addAction("Modifica");
+    QAction *deleteAction = menu.addAction("Elimina");
+
+    // Stile scuro per il menu
+    menu.setStyleSheet(
+        "QMenu { background-color: #2c2c2e; color: white; border: 1px solid #3a3a3c; }"
+        "QMenu::item:selected { background-color: #0a84ff; }"
+        );
+
+    QAction *selected = menu.exec(ui->passwordList->mapToGlobal(pos));
+    if (!selected) return;
+
+    if (selected == copyUserAction) {
+        QGuiApplication::clipboard()->setText(entry.username());
+    }
+    else if (selected == copyPassAction) {
+        QGuiApplication::clipboard()->setText(entry.password());
+    }
+    else if (selected == editAction) {
+        AddPasswordDialog dialog(entry, this);
+        if (dialog.exec() == QDialog::Accepted) {
+            if (m_vault->updateEntry(dialog.resultEntry())) {
+                refreshList();
+            }
+        }
+    }
+    else if (selected == deleteAction) {
+        auto reply = QMessageBox::question(
+            this,
+            "Conferma eliminazione",
+            "Sei sicuro di voler eliminare \"" + entry.title() + "\"?",
+            QMessageBox::Yes | QMessageBox::No
+            );
+
+        if (reply == QMessageBox::Yes) {
+            if (m_vault->removeEntry(entry.id())) {
+                refreshList();
+            }
         }
     }
 }

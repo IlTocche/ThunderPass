@@ -29,6 +29,7 @@ private slots:
     void onLogoutClicked();
     void onInactivityTimeout();   // chiamato quando scade il timer
     void onSearchTextChanged(const QString &text);
+    void onCustomContextMenu(const QPoint &pos);
 
 private:
     void refreshList();
