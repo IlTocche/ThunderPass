@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QToolTip>
+#include <qmessagebox.h>
 
 PasswordDetailsDialog::PasswordDetailsDialog(const PasswordEntry &entry, QWidget *parent)
     : QDialog(parent)
@@ -34,6 +35,9 @@ PasswordDetailsDialog::PasswordDetailsDialog(const PasswordEntry &entry, QWidget
 
     connect(ui->closeButton, &QPushButton::clicked,
             this, &PasswordDetailsDialog::onCloseClicked);
+
+    connect(ui->deleteButton, &QPushButton::clicked,
+            this, &PasswordDetailsDialog::onDeleteClicked);
 }
 
 PasswordDetailsDialog::~PasswordDetailsDialog()
@@ -65,6 +69,20 @@ void PasswordDetailsDialog::onTogglePasswordVisibility()
     }
 }
 
+void PasswordDetailsDialog::onDeleteClicked()
+{
+    auto reply = QMessageBox::question(
+        this,
+        "Conferma eliminazione",
+        "Sei sicuro di voler eliminare questa password?\nQuesta azione non può essere annullata.",
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (reply == QMessageBox::Yes) {
+        emit entryDeleted(m_entry.id());
+        accept(); // chiude la dialog
+    }
+}
 void PasswordDetailsDialog::onCloseClicked()
 {
     accept();

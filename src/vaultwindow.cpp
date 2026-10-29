@@ -32,6 +32,15 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
                 const auto entries = m_vault->entries();
                 if (row >= 0 && row < entries.size()) {
                     PasswordDetailsDialog dialog(entries.at(row), this);
+
+                    // Quando l'utente elimina la password
+                    connect(&dialog, &PasswordDetailsDialog::entryDeleted,
+                            this, [this](const QString &id) {
+                                if (m_vault->removeEntry(id)) {
+                                    refreshList();
+                                }
+                            });
+
                     dialog.exec();
                 }
             });

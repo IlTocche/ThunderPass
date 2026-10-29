@@ -17,11 +17,15 @@ public:
     explicit PasswordDetailsDialog(const PasswordEntry &entry, QWidget *parent = nullptr);
     ~PasswordDetailsDialog();
 
+signals:
+    void entryDeleted(const QString &id);   // avvisa la vault che una password è stata cancellata
+
 private slots:
     void onCopyUsername();
     void onCopyPassword();
     void onTogglePasswordVisibility();
     void onCloseClicked();
+    void onDeleteClicked();
 
 private:
     std::unique_ptr<Ui::PasswordDetailsDialog> ui;

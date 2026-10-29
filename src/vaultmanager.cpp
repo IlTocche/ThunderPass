@@ -173,6 +173,19 @@ bool VaultManager::addEntry(const PasswordEntry &entry)
     return saveVault();
 }
 
+bool VaultManager::removeEntry(const QString &id)
+{
+    if (!m_unlocked) return false;
+
+    for (int i = 0; i < m_entries.size(); ++i) {
+        if (m_entries[i].id() == id) {
+            m_entries.removeAt(i);
+            return saveVault();
+        }
+    }
+    return false; // non trovata
+}
+
 QVector<PasswordEntry> VaultManager::entries() const
 {
     return m_entries;

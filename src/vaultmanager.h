@@ -34,6 +34,9 @@ public:
     // Controlla se il vault è sbloccato
     bool isUnlocked() const;
 
+    // Rimuove una password tramite il suo ID
+    bool removeEntry(const QString &id);
+
 private:
     // Percorso del file del vault
     QString vaultFilePath(const QString &email) const;
