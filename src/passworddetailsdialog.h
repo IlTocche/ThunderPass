@@ -19,6 +19,7 @@ public:
 
 signals:
     void entryDeleted(const QString &id);   // avvisa la vault che una password è stata cancellata
+    void entryUpdated(const PasswordEntry &entry);
 
 private slots:
     void onCopyUsername();
@@ -26,6 +27,7 @@ private slots:
     void onTogglePasswordVisibility();
     void onCloseClicked();
     void onDeleteClicked();
+    void onEditClicked();
 
 private:
     std::unique_ptr<Ui::PasswordDetailsDialog> ui;

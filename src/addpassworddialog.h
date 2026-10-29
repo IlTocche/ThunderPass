@@ -15,6 +15,7 @@ class AddPasswordDialog : public QDialog
 
 public:
     explicit AddPasswordDialog(QWidget *parent = nullptr);
+    explicit AddPasswordDialog(const PasswordEntry &entryToEdit, QWidget *parent = nullptr);
     ~AddPasswordDialog();
 
     // Ritorna la password creata (chiamare solo se l'utente ha premuto Salva)

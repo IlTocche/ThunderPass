@@ -40,6 +40,12 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
                                     refreshList();
                                 }
                             });
+                    connect(&dialog, &PasswordDetailsDialog::entryUpdated,
+                            this, [this](const PasswordEntry &updated) {
+                                if (m_vault->updateEntry(updated)) {
+                                    refreshList();
+                                }
+                            });
 
                     dialog.exec();
                 }

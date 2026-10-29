@@ -1,5 +1,6 @@
 #include "passworddetailsdialog.h"
 #include "ui_passworddetailsdialog.h"
+#include "addpassworddialog.h"
 
 #include <QClipboard>
 #include <QGuiApplication>
@@ -38,6 +39,9 @@ PasswordDetailsDialog::PasswordDetailsDialog(const PasswordEntry &entry, QWidget
 
     connect(ui->deleteButton, &QPushButton::clicked,
             this, &PasswordDetailsDialog::onDeleteClicked);
+
+    connect(ui->editButton, &QPushButton::clicked,
+            this, &PasswordDetailsDialog::onEditClicked);
 }
 
 PasswordDetailsDialog::~PasswordDetailsDialog()
@@ -66,6 +70,16 @@ void PasswordDetailsDialog::onTogglePasswordVisibility()
     } else {
         ui->passwordValue->setText("••••••••••••");
         ui->togglePasswordButton->setText("Mostra");
+    }
+}
+
+void PasswordDetailsDialog::onEditClicked()
+{
+    AddPasswordDialog dialog(m_entry, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        m_entry = dialog.resultEntry();
+        emit entryUpdated(m_entry);
+        accept(); // chiudiamo i dettagli dopo la modifica
     }
 }
 

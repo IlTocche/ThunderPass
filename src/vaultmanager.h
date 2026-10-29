@@ -37,6 +37,8 @@ public:
     // Rimuove una password tramite il suo ID
     bool removeEntry(const QString &id);
 
+    bool updateEntry(const PasswordEntry &entry);
+
 private:
     // Percorso del file del vault
     QString vaultFilePath(const QString &email) const;
