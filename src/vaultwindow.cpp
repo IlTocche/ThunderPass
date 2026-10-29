@@ -196,8 +196,10 @@ void VaultWindow::onCustomContextMenu(const QPoint &pos)
 
     // Stile scuro per il menu
     menu.setStyleSheet(
-        "QMenu { background-color: #2c2c2e; color: white; border: 1px solid #3a3a3c; }"
+        "QMenu { background-color: #2c2c2e; color: white; border: 1px solid #3a3a3c; padding: 6px; }"
+        "QMenu::item { padding: 8px 24px 8px 14px; border-radius: 6px; }"
         "QMenu::item:selected { background-color: #0a84ff; }"
+        "QMenu::separator { height: 1px; background-color: #3a3a3c; margin: 6px 8px; }"
         );
 
     QAction *selected = menu.exec(ui->passwordList->mapToGlobal(pos));

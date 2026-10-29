@@ -11,7 +11,7 @@ RegisterDialog::RegisterDialog(AuthManager *authManager, QWidget *parent)
     ui->setupUi(this);
 
     setWindowTitle("ThunderPass - Crea account");
-    setFixedSize(420, 560);
+    setFixedSize(420, 600);
     setModal(true);
 
     connect(ui->registerButton, &QPushButton::clicked,

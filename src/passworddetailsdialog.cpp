@@ -15,7 +15,7 @@ PasswordDetailsDialog::PasswordDetailsDialog(const PasswordEntry &entry, QWidget
     ui->setupUi(this);
 
     setWindowTitle(m_entry.title());
-    setFixedSize(420, 420);
+    setFixedSize(500, 520);
     setModal(true);
 
     // Riempiamo i campi

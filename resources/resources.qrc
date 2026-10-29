@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <!-- Qui aggiungeremo icone e stili più avanti -->
+        <file>images/thunderpass-logo.png</file>
     </qresource>
 </RCC>

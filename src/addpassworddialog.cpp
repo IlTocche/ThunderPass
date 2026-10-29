@@ -11,7 +11,7 @@ AddPasswordDialog::AddPasswordDialog(QWidget *parent)
     ui->setupUi(this);
 
     setWindowTitle("Aggiungi password");
-    setFixedSize(420, 480);
+    setFixedSize(440, 520);
     setModal(true);
 
     setupConnections();
@@ -25,7 +25,7 @@ AddPasswordDialog::AddPasswordDialog(const PasswordEntry &entryToEdit, QWidget *
     ui->setupUi(this);
 
     setWindowTitle("Modifica password");
-    setFixedSize(420, 480);
+    setFixedSize(440, 520);
     setModal(true);
 
     fillForm();

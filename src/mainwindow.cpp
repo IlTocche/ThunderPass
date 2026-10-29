@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     setWindowTitle("ThunderPass");
-    setFixedSize(420, 520);
+    setFixedSize(420, 560);
 
 
     setGeometry(
