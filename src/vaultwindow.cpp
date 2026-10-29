@@ -6,6 +6,8 @@
 
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget *parent)
     : QMainWindow(parent)
@@ -50,6 +52,13 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
                     dialog.exec();
                 }
             });
+
+    // Timer di inattività
+    m_inactivityTimer.setSingleShot(true);
+    connect(&m_inactivityTimer, &QTimer::timeout,
+            this, &VaultWindow::onInactivityTimeout);
+
+    resetInactivityTimer(); // avvia il timer
 }
 
 VaultWindow::~VaultWindow()
@@ -85,6 +94,36 @@ void VaultWindow::onAddPasswordClicked()
 
 void VaultWindow::onLogoutClicked()
 {
-    m_vault->lock(); // cancelliamo la chiave dalla memoria
+    m_inactivityTimer.stop();
+    m_vault->lock();
     close();
+}
+
+
+void VaultWindow::resetInactivityTimer()
+{
+    m_inactivityTimer.start(INACTIVITY_TIMEOUT_MS);
+}
+
+void VaultWindow::onInactivityTimeout()
+{
+    // Tempo scaduto → blocchiamo il vault
+    m_vault->lock();
+
+    QMessageBox::information(this, "Sessione scaduta",
+                             "Sei stato disconnesso per inattività.");
+
+    close(); // torna al login
+}
+
+void VaultWindow::mousePressEvent(QMouseEvent *event)
+{
+    resetInactivityTimer();
+    QMainWindow::mousePressEvent(event);
+}
+
+void VaultWindow::keyPressEvent(QKeyEvent *event)
+{
+    resetInactivityTimer();
+    QMainWindow::keyPressEvent(event);
 }
