@@ -18,14 +18,17 @@ public:
     explicit AddPasswordDialog(const PasswordEntry &entryToEdit, QWidget *parent = nullptr);
     ~AddPasswordDialog();
 
-    // Ritorna la password creata (chiamare solo se l'utente ha premuto Salva)
     PasswordEntry resultEntry() const;
 
 private slots:
     void onSaveClicked();
     void onCancelClicked();
+    void onGenerateClicked();
 
 private:
+    void setupConnections();
+    void fillForm();
+
     std::unique_ptr<Ui::AddPasswordDialog> ui;
     PasswordEntry m_entry;
 };
