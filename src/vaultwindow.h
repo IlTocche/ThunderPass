@@ -28,6 +28,7 @@ private slots:
     void onAddPasswordClicked();
     void onLogoutClicked();
     void onInactivityTimeout();   // chiamato quando scade il timer
+    void onSearchTextChanged(const QString &text);
 
 private:
     void refreshList();

@@ -20,7 +20,6 @@ QMainWindow, QWidget {
     color: #ffffff;
     font-family: "SF Pro Display", "Segoe UI", sans-serif;
 }
-
 QPushButton {
     background-color: #0a84ff;
     color: white;
@@ -30,31 +29,36 @@ QPushButton {
     font-size: 14px;
     font-weight: 600;
 }
-
 QPushButton:hover {
     background-color: #0071e3;
 }
-
 QPushButton#logoutButton {
     background-color: transparent;
     color: #ff453a;
     font-weight: 500;
 }
-
 QPushButton#logoutButton:hover {
     color: #ff6961;
 }
-
 QLabel#titleLabel {
     font-size: 22px;
     font-weight: 700;
 }
-
 QLabel#subtitleLabel {
     font-size: 13px;
     color: #8e8e93;
 }
-
+QLineEdit#searchEdit {
+    background-color: #2c2c2e;
+    border: 1px solid #3a3a3c;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #ffffff;
+    font-size: 14px;
+}
+QLineEdit#searchEdit:focus {
+    border: 1px solid #0a84ff;
+}
 QListWidget {
     background-color: #2c2c2e;
     border: 1px solid #3a3a3c;
@@ -63,12 +67,10 @@ QListWidget {
     color: #ffffff;
     outline: none;
 }
-
 QListWidget::item {
     padding: 12px;
     border-radius: 6px;
 }
-
 QListWidget::item:selected {
     background-color: #0a84ff;
 }
@@ -91,6 +93,8 @@ QListWidget::item:selected {
     <property name="bottomMargin">
      <number>20</number>
     </property>
+
+    <!-- Header -->
     <item>
      <layout class="QHBoxLayout" name="headerLayout">
       <item>
@@ -135,6 +139,16 @@ QListWidget::item:selected {
       </item>
      </layout>
     </item>
+
+    <!-- Search bar -->
+    <item>
+     <widget class="QLineEdit" name="searchEdit">
+      <property name="placeholderText">
+       <string>Cerca password...</string>
+      </property>
+     </widget>
+    </item>
+
     <item>
      <widget class="QLabel" name="subtitleLabel">
       <property name="text">
@@ -142,6 +156,7 @@ QListWidget::item:selected {
       </property>
      </widget>
     </item>
+
     <item>
      <widget class="QListWidget" name="passwordList"/>
     </item>

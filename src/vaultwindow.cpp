@@ -53,6 +53,9 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
                 }
             });
 
+    connect(ui->searchEdit, &QLineEdit::textChanged,
+            this, &VaultWindow::onSearchTextChanged);
+
     // Timer di inattività
     m_inactivityTimer.setSingleShot(true);
     connect(&m_inactivityTimer, &QTimer::timeout,
@@ -67,16 +70,8 @@ VaultWindow::~VaultWindow()
 
 void VaultWindow::refreshList()
 {
-    ui->passwordList->clear();
-
-    const auto entries = m_vault->entries();
-    for (const PasswordEntry &entry : entries) {
-        QString text = entry.title();
-        if (!entry.username().isEmpty()) {
-            text += "  •  " + entry.username();
-        }
-        ui->passwordList->addItem(text);
-    }
+    // Riusiamo la stessa logica della ricerca
+    onSearchTextChanged(ui->searchEdit->text());
 }
 
 void VaultWindow::onAddPasswordClicked()
@@ -126,4 +121,28 @@ void VaultWindow::keyPressEvent(QKeyEvent *event)
 {
     resetInactivityTimer();
     QMainWindow::keyPressEvent(event);
+}
+
+void VaultWindow::onSearchTextChanged(const QString &text)
+{
+    ui->passwordList->clear();
+
+    const QString search = text.trimmed().toLower();
+    const auto entries = m_vault->entries();
+
+    for (const PasswordEntry &entry : entries) {
+        // Cerca nel titolo, username e url
+        bool match = search.isEmpty()
+                     || entry.title().toLower().contains(search)
+                     || entry.username().toLower().contains(search)
+                     || entry.url().toLower().contains(search);
+
+        if (match) {
+            QString display = entry.title();
+            if (!entry.username().isEmpty()) {
+                display += "  •  " + entry.username();
+            }
+            ui->passwordList->addItem(display);
+        }
+    }
 }
