@@ -48,6 +48,7 @@ qt_add_executable(ThunderPass
     src/addpassworddialog.ui
     src/passworddetailsdialog.h src/passworddetailsdialog.cpp
     src/passworddetailsdialog.ui
+    app.rc
 
 )
 
