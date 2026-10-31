@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AuthenticatorPage</class>
+ <widget class="QWidget" name="AuthenticatorPage">
+  <property name="styleSheet">
+   <string notr="true">
+QWidget {
+    background-color: #1c1c1e;
+    color: #ffffff;
+}
+QLabel#titleLabel {
+    font-size: 22px;
+    font-weight: 700;
+}
+QLabel#codeLabel {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #0a84ff;
+}
+QPushButton {
+    background-color: #0a84ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #0071e3;
+}
+QPushButton#copyButton {
+    background-color: #3a3a3c;
+}
+QPushButton#copyButton:hover {
+    background-color: #48484a;
+}
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>16</number>
+   </property>
+   <property name="leftMargin">
+    <number>32</number>
+   </property>
+   <property name="topMargin">
+    <number>28</number>
+   </property>
+   <property name="rightMargin">
+    <number>32</number>
+   </property>
+   <property name="bottomMargin">
+    <number>28</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="text">
+      <string>Authenticator</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="subtitleLabel">
+     <property name="text">
+      <string>Genera codici 2FA (compatibile con i siti che usano Google Authenticator, Authy, ecc.)</string>
+     </property>
+     <property name="styleSheet">
+      <string>color: #8e8e93; font-size: 13px;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="topSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>30</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="codeLabel">
+     <property name="text">
+      <string>------</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="timerLabel">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="middleSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonLayout">
+     <item>
+      <spacer name="leftBtnSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="copyButton">
+       <property name="text">
+        <string>Copia codice</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addSecretButton">
+       <property name="text">
+        <string>Aggiungi secret</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="rightBtnSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
