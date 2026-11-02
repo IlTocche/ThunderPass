@@ -3,6 +3,7 @@
 #include "passwordentry.h"
 #include "addpassworddialog.h"
 #include "passworddetailsdialog.h"
+#include "authenticatorpage.h"
 
 #include <QMessageBox>
 #include <QInputDialog>
@@ -21,6 +22,23 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
     , m_vault(vault)
 {
     ui->setupUi(this);
+
+    // Pagina Authenticator
+    m_authenticatorPage = new AuthenticatorPage(this);
+    ui->contentStack->addWidget(m_authenticatorPage); // indice 1
+    // indice 0 = pagina password (quella già presente nel .ui)
+
+    // Menu laterale
+    connect(ui->toggleMenuButton, &QPushButton::clicked,
+            this, &VaultWindow::onToggleMenuClicked);
+    connect(ui->passwordsNavButton, &QPushButton::clicked,
+            this, &VaultWindow::onPasswordsNavClicked);
+    connect(ui->authenticatorNavButton, &QPushButton::clicked,
+            this, &VaultWindow::onAuthenticatorNavClicked);
+
+    // Partiamo sulla pagina password
+    ui->contentStack->setCurrentIndex(0);
+    setMenuVisible(true);
 
     setWindowTitle("ThunderPass - " + m_userEmail);
     resize(900, 600);
@@ -233,4 +251,34 @@ void VaultWindow::onCustomContextMenu(const QPoint &pos)
             }
         }
     }
+}
+
+
+void VaultWindow::setMenuVisible(bool visible)
+{
+    m_menuVisible = visible;
+    ui->sideMenu->setVisible(visible);
+    ui->toggleMenuButton->setText(visible ? "☰" : "☰");
+}
+
+void VaultWindow::onToggleMenuClicked()
+{
+    setMenuVisible(!m_menuVisible);
+    resetInactivityTimer();
+}
+
+void VaultWindow::onPasswordsNavClicked()
+{
+    ui->contentStack->setCurrentIndex(0);
+    ui->passwordsNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 8px;");
+    ui->authenticatorNavButton->setStyleSheet("background-color: transparent; border-radius: 8px;");
+    resetInactivityTimer();
+}
+
+void VaultWindow::onAuthenticatorNavClicked()
+{
+    ui->contentStack->setCurrentIndex(1);
+    ui->authenticatorNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 8px;");
+    ui->passwordsNavButton->setStyleSheet("background-color: transparent; border-radius: 8px;");
+    resetInactivityTimer();
 }
