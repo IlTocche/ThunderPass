@@ -19,13 +19,12 @@ QString VaultManager::vaultFilePath(const QString &email) const
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(path);
-    // Ogni utente ha il suo file vault
     return path + "/vault_" + email + ".dat";
 }
 
 bool VaultManager::deriveKey(const QString &password, const QByteArray &salt, QByteArray &outKey)
 {
-    outKey.resize(crypto_secretbox_KEYBYTES); // 32 byte
+    outKey.resize(crypto_secretbox_KEYBYTES);
 
     QByteArray passwordBytes = password.toUtf8();
 
@@ -45,7 +44,6 @@ bool VaultManager::deriveKey(const QString &password, const QByteArray &salt, QB
 
 QByteArray VaultManager::encrypt(const QByteArray &plaintext)
 {
-    // Nonce casuale (24 byte per XChaCha20)
     QByteArray nonce(crypto_secretbox_NONCEBYTES, 0);
     randombytes_buf(nonce.data(), nonce.size());
 
@@ -63,7 +61,6 @@ QByteArray VaultManager::encrypt(const QByteArray &plaintext)
         return QByteArray();
     }
 
-    // Salviamo: nonce + ciphertext
     return nonce + ciphertext;
 }
 
@@ -87,7 +84,7 @@ QByteArray VaultManager::decrypt(const QByteArray &data)
         );
 
     if (result != 0) {
-        return QByteArray(); // autenticazione fallita o chiave sbagliata
+        return QByteArray();
     }
 
     return plaintext;
@@ -100,17 +97,17 @@ bool VaultManager::unlock(const QString &email, const QString &masterPassword)
 
     QFile file(path);
     if (!file.exists()) {
-        // Prima volta: creiamo un nuovo vault vuoto
+        // Prima volta → vault vuoto
         m_salt = Crypto::generateSalt();
         if (!deriveKey(masterPassword, m_salt, m_key)) {
             return false;
         }
         m_entries.clear();
+        m_totpAccounts.clear();
         m_unlocked = true;
         return saveVault();
     }
 
-    // Carichiamo il file esistente
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
@@ -118,7 +115,6 @@ bool VaultManager::unlock(const QString &email, const QString &masterPassword)
     QByteArray fileData = file.readAll();
     file.close();
 
-    // Formato file: [16 byte salt] + [dati cifrati]
     if (fileData.size() < crypto_pwhash_SALTBYTES) {
         return false;
     }
@@ -132,22 +128,35 @@ bool VaultManager::unlock(const QString &email, const QString &masterPassword)
 
     QByteArray decrypted = decrypt(encrypted);
     if (decrypted.isEmpty()) {
-        // Password sbagliata o file corrotto
         m_key.clear();
         return false;
     }
 
-    // Parsiamo il JSON
     QJsonDocument doc = QJsonDocument::fromJson(decrypted);
-    if (!doc.isArray()) {
+    m_entries.clear();
+    m_totpAccounts.clear();
+
+    if (doc.isArray()) {
+        // Formato vecchio (solo password) → compatibilità
+        QJsonArray array = doc.array();
+        for (const QJsonValue &val : array) {
+            m_entries.append(PasswordEntry::fromJson(val.toObject()));
+        }
+    } else if (doc.isObject()) {
+        QJsonObject root = doc.object();
+
+        QJsonArray passwords = root["passwords"].toArray();
+        for (const QJsonValue &val : passwords) {
+            m_entries.append(PasswordEntry::fromJson(val.toObject()));
+        }
+
+        QJsonArray totp = root["totp"].toArray();
+        for (const QJsonValue &val : totp) {
+            m_totpAccounts.append(TotpAccount::fromJson(val.toObject()));
+        }
+    } else {
         m_key.clear();
         return false;
-    }
-
-    m_entries.clear();
-    QJsonArray array = doc.array();
-    for (const QJsonValue &val : array) {
-        m_entries.append(PasswordEntry::fromJson(val.toObject()));
     }
 
     m_unlocked = true;
@@ -156,19 +165,18 @@ bool VaultManager::unlock(const QString &email, const QString &masterPassword)
 
 void VaultManager::lock()
 {
-    // Cancelliamo la chiave dalla memoria in modo sicuro
     if (!m_key.isEmpty()) {
         sodium_memzero(m_key.data(), m_key.size());
         m_key.clear();
     }
     m_entries.clear();
+    m_totpAccounts.clear();
     m_unlocked = false;
 }
 
 bool VaultManager::addEntry(const PasswordEntry &entry)
 {
     if (!m_unlocked) return false;
-
     m_entries.append(entry);
     return saveVault();
 }
@@ -183,7 +191,7 @@ bool VaultManager::removeEntry(const QString &id)
             return saveVault();
         }
     }
-    return false; // non trovata
+    return false;
 }
 
 bool VaultManager::updateEntry(const PasswordEntry &entry)
@@ -213,20 +221,27 @@ bool VaultManager::saveVault()
 {
     if (!m_unlocked) return false;
 
-    // Creiamo il JSON di tutte le password
-    QJsonArray array;
+    QJsonArray passwordsArray;
     for (const PasswordEntry &entry : m_entries) {
-        array.append(entry.toJson());
+        passwordsArray.append(entry.toJson());
     }
 
-    QByteArray plaintext = QJsonDocument(array).toJson(QJsonDocument::Compact);
+    QJsonArray totpArray;
+    for (const TotpAccount &acc : m_totpAccounts) {
+        totpArray.append(acc.toJson());
+    }
+
+    QJsonObject root;
+    root["passwords"] = passwordsArray;
+    root["totp"] = totpArray;
+
+    QByteArray plaintext = QJsonDocument(root).toJson(QJsonDocument::Compact);
     QByteArray encrypted = encrypt(plaintext);
 
     if (encrypted.isEmpty()) {
         return false;
     }
 
-    // Scriviamo: salt + dati cifrati
     QFile file(vaultFilePath(m_email));
     if (!file.open(QIODevice::WriteOnly)) {
         return false;
@@ -240,6 +255,47 @@ bool VaultManager::saveVault()
 
 bool VaultManager::loadVault()
 {
-    // Già gestito dentro unlock()
     return true;
+}
+
+// ============================================================
+// TOTP Accounts
+// ============================================================
+
+QVector<TotpAccount> VaultManager::totpAccounts() const
+{
+    return m_totpAccounts;
+}
+
+bool VaultManager::addTotpAccount(const TotpAccount &account)
+{
+    if (!m_unlocked) return false;
+    m_totpAccounts.append(account);
+    return saveVault();
+}
+
+bool VaultManager::removeTotpAccount(const QString &id)
+{
+    if (!m_unlocked) return false;
+
+    for (int i = 0; i < m_totpAccounts.size(); ++i) {
+        if (m_totpAccounts[i].id() == id) {
+            m_totpAccounts.removeAt(i);
+            return saveVault();
+        }
+    }
+    return false;
+}
+
+bool VaultManager::updateTotpAccount(const TotpAccount &account)
+{
+    if (!m_unlocked) return false;
+
+    for (int i = 0; i < m_totpAccounts.size(); ++i) {
+        if (m_totpAccounts[i].id() == account.id()) {
+            m_totpAccounts[i] = account;
+            return saveVault();
+        }
+    }
+    return false;
 }

@@ -7,6 +7,7 @@
 #include <QByteArray>
 
 #include "passwordentry.h"
+#include "totpaccount.h"
 
 /**
  * @brief Gestisce il vault delle password in modo cifrato
@@ -39,6 +40,12 @@ public:
 
     bool updateEntry(const PasswordEntry &entry);
 
+    // Totp
+    QVector<TotpAccount> totpAccounts() const;
+    bool addTotpAccount(const TotpAccount &account);
+    bool removeTotpAccount(const QString &id);
+    bool updateTotpAccount(const TotpAccount &account);
+
 private:
     // Percorso del file del vault
     QString vaultFilePath(const QString &email) const;
@@ -63,6 +70,10 @@ private:
     QByteArray m_salt;         // Salt usato per derivare la chiave
     QString m_email;
     bool m_unlocked = false;
+
+
+    //Totp
+    QVector<TotpAccount> m_totpAccounts;
 };
 
 #endif // VAULTMANAGER_H
