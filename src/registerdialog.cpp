@@ -19,6 +19,14 @@ RegisterDialog::RegisterDialog(AuthManager *authManager, QWidget *parent)
 
     connect(ui->backToLoginButton, &QPushButton::clicked,
             this, &RegisterDialog::onBackToLoginClicked);
+
+
+    connect(ui->emailEdit, &QLineEdit::returnPressed,
+            this, &RegisterDialog::onRegisterClicked);
+    connect(ui->passwordEdit, &QLineEdit::returnPressed,
+            this, &RegisterDialog::onRegisterClicked);
+    connect(ui->confirmPasswordEdit, &QLineEdit::returnPressed,
+            this, &RegisterDialog::onRegisterClicked);
 }
 
 RegisterDialog::~RegisterDialog()

@@ -32,6 +32,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->createAccountButton, &QPushButton::clicked,
             this, &MainWindow::onCreateAccountClicked);
+
+
+    connect(ui->passwordEdit, &QLineEdit::returnPressed,
+            this, &MainWindow::onLoginClicked);
+
+
+    connect(ui->emailEdit, &QLineEdit::returnPressed,
+            this, &MainWindow::onLoginClicked);
 }
 
 MainWindow::~MainWindow()
