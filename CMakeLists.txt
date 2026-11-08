@@ -53,6 +53,8 @@ qt_add_executable(ThunderPass
     src/authenticatorpage.h src/authenticatorpage.cpp
     src/authenticatorpage.ui
     src/totpaccount.h src/totpaccount.cpp
+    src/settingspage.h src/settingspage.cpp
+    src/settingspage.ui
 
 )
 

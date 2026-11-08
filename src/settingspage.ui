@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsPage</class>
+ <widget class="QWidget" name="SettingsPage">
+  <property name="styleSheet">
+   <string notr="true">
+QWidget {
+    background-color: #1c1c1e;
+    color: #ffffff;
+}
+QLabel#titleLabel {
+    font-size: 28px;
+    font-weight: 700;
+}
+QLabel#sectionLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: #98989f;
+}
+QLabel, QCheckBox {
+    color: #ffffff;
+    font-size: 14px;
+}
+QComboBox {
+    background-color: #2c2c2e;
+    border: 1px solid #3a3a3c;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #ffffff;
+    min-height: 20px;
+}
+QComboBox::drop-down { border: none; }
+QComboBox QAbstractItemView {
+    background-color: #2c2c2e;
+    color: #ffffff;
+    selection-background-color: #0a84ff;
+}
+QPushButton {
+    background-color: #0a84ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+QPushButton:hover { background-color: #2b95ff; }
+QFrame#card {
+    background-color: #2c2c2e;
+    border-radius: 12px;
+}
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing"><number>18</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="text"><string>Impostazioni</string></property>
+    </widget>
+   </item>
+
+   <!-- ASPETTO -->
+   <item>
+    <widget class="QLabel" name="appearanceLabel">
+     <property name="text"><string>ASPETTO</string></property>
+     <property name="styleSheet"><string>font-size: 13px; font-weight: 600; color: #98989f;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="card">
+     <layout class="QHBoxLayout" name="themeLayout">
+      <property name="leftMargin"><number>16</number></property>
+      <property name="topMargin"><number>14</number></property>
+      <property name="rightMargin"><number>16</number></property>
+      <property name="bottomMargin"><number>14</number></property>
+      <item>
+       <widget class="QLabel" name="themeText">
+        <property name="text"><string>Tema</string></property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="themeSpacer">
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+        <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="themeCombo">
+        <item><property name="text"><string>Scuro</string></property></item>
+        <item><property name="text"><string>Chiaro</string></property></item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- SICUREZZA -->
+   <item>
+    <widget class="QLabel" name="securityLabel">
+     <property name="text"><string>SICUREZZA</string></property>
+     <property name="styleSheet"><string>font-size: 13px; font-weight: 600; color: #98989f;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="card2">
+     <property name="styleSheet"><string>background-color: #2c2c2e; border-radius: 12px;</string></property>
+     <layout class="QVBoxLayout" name="securityLayout">
+      <property name="leftMargin"><number>16</number></property>
+      <property name="topMargin"><number>14</number></property>
+      <property name="rightMargin"><number>16</number></property>
+      <property name="bottomMargin"><number>14</number></property>
+      <item>
+       <widget class="QCheckBox" name="skipLoginCheck">
+        <property name="text"><string>Apri ThunderPass senza chiedere la password</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="skipLoginHint">
+        <property name="text"><string>Sconsigliato: chiunque usi questo computer potrà vedere le password.</string></property>
+        <property name="styleSheet"><string>color: #98989f; font-size: 12px;</string></property>
+        <property name="wordWrap"><bool>true</bool></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- ACCOUNT -->
+   <item>
+    <widget class="QLabel" name="accountLabel">
+     <property name="text"><string>ACCOUNT</string></property>
+     <property name="styleSheet"><string>font-size: 13px; font-weight: 600; color: #98989f;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="card3">
+     <property name="styleSheet"><string>background-color: #2c2c2e; border-radius: 12px;</string></property>
+     <layout class="QVBoxLayout" name="accountLayout">
+      <property name="spacing"><number>12</number></property>
+      <property name="leftMargin"><number>16</number></property>
+      <property name="topMargin"><number>14</number></property>
+      <property name="rightMargin"><number>16</number></property>
+      <property name="bottomMargin"><number>14</number></property>
+      <item>
+       <widget class="QLabel" name="accountEmailLabel">
+        <property name="text"><string>email@example.com</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="changePasswordButton">
+        <property name="text"><string>Cambia master password</string></property>
+        <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
