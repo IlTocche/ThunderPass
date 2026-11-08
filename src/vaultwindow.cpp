@@ -4,16 +4,15 @@
 #include "addpassworddialog.h"
 #include "passworddetailsdialog.h"
 #include "authenticatorpage.h"
+#include "settingspage.h"
 
 #include <QMessageBox>
-#include <QInputDialog>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QAction>
 #include <QClipboard>
 #include <QGuiApplication>
-#include "addpassworddialog.h"
 
 VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget *parent)
     : QMainWindow(parent)
@@ -23,73 +22,80 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
 {
     ui->setupUi(this);
 
-    // Pagina Authenticator
-    m_authenticatorPage = new AuthenticatorPage(m_vault, this);
-    ui->contentStack->addWidget(m_authenticatorPage);
+    setWindowTitle("ThunderPass - " + m_userEmail);
+    resize(1000, 620);
 
-    // Menu laterale
+    // Pagine extra nello stack
+    // indice 0 = passwordsPage (già nel .ui)
+    m_authenticatorPage = new AuthenticatorPage(m_vault, this);
+    ui->contentStack->addWidget(m_authenticatorPage); // indice 1
+
+    m_settingsPage = new SettingsPage(nullptr, m_vault, m_userEmail, this);
+    ui->contentStack->addWidget(m_settingsPage); // indice 2
+
+    // Navigazione menu
     connect(ui->toggleMenuButton, &QPushButton::clicked,
             this, &VaultWindow::onToggleMenuClicked);
     connect(ui->passwordsNavButton, &QPushButton::clicked,
             this, &VaultWindow::onPasswordsNavClicked);
     connect(ui->authenticatorNavButton, &QPushButton::clicked,
             this, &VaultWindow::onAuthenticatorNavClicked);
+    connect(ui->settingsNavButton, &QPushButton::clicked,
+            this, &VaultWindow::onSettingsNavClicked);
 
-    // Partiamo sulla pagina password
-    ui->contentStack->setCurrentIndex(0);
-    setMenuVisible(true);
-
-    setWindowTitle("ThunderPass - " + m_userEmail);
-    resize(900, 600);
-
+    // Azioni principali
     connect(ui->addPasswordButton, &QPushButton::clicked,
             this, &VaultWindow::onAddPasswordClicked);
-
     connect(ui->logoutButton, &QPushButton::clicked,
             this, &VaultWindow::onLogoutClicked);
-
-    refreshList();
-
-    connect(ui->passwordList, &QListWidget::itemClicked,
-            this, [this](QListWidgetItem *item) {
-                int row = ui->passwordList->row(item);
-                const auto entries = m_vault->entries();
-                if (row >= 0 && row < entries.size()) {
-                    PasswordDetailsDialog dialog(entries.at(row), this);
-
-                    // Quando l'utente elimina la password
-                    connect(&dialog, &PasswordDetailsDialog::entryDeleted,
-                            this, [this](const QString &id) {
-                                if (m_vault->removeEntry(id)) {
-                                    refreshList();
-                                }
-                            });
-                    connect(&dialog, &PasswordDetailsDialog::entryUpdated,
-                            this, [this](const PasswordEntry &updated) {
-                                if (m_vault->updateEntry(updated)) {
-                                    refreshList();
-                                }
-                            });
-
-                    dialog.exec();
-                }
-            });
-
     connect(ui->searchEdit, &QLineEdit::textChanged,
             this, &VaultWindow::onSearchTextChanged);
 
-    // Timer di inattività
+    // Click su una password
+    connect(ui->passwordList, &QListWidget::itemClicked,
+            this, [this](QListWidgetItem *item) {
+                int row = ui->passwordList->row(item);
+
+                // Ricostruisci la lista filtrata per avere l'entry giusta
+                QString search = ui->searchEdit->text().trimmed().toLower();
+                QVector<PasswordEntry> visible;
+                for (const PasswordEntry &e : m_vault->entries()) {
+                    bool match = search.isEmpty()
+                    || e.title().toLower().contains(search)
+                        || e.username().toLower().contains(search)
+                        || e.url().toLower().contains(search);
+                    if (match) visible.append(e);
+                }
+                if (row < 0 || row >= visible.size()) return;
+
+                PasswordDetailsDialog dialog(visible.at(row), this);
+
+                connect(&dialog, &PasswordDetailsDialog::entryDeleted, this, [this](const QString &id) {
+                    if (m_vault->removeEntry(id)) refreshList();
+                });
+                connect(&dialog, &PasswordDetailsDialog::entryUpdated, this, [this](const PasswordEntry &updated) {
+                    if (m_vault->updateEntry(updated)) refreshList();
+                });
+
+                dialog.exec();
+            });
+
+    // Menu contestuale
+    ui->passwordList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->passwordList, &QListWidget::customContextMenuRequested,
+            this, &VaultWindow::onCustomContextMenu);
+
+    // Timer inattività
     m_inactivityTimer.setSingleShot(true);
     connect(&m_inactivityTimer, &QTimer::timeout,
             this, &VaultWindow::onInactivityTimeout);
 
-    resetInactivityTimer(); // avvia il timer
-
-
-    // Abilita il menu contestuale
-    ui->passwordList->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->passwordList, &QListWidget::customContextMenuRequested,
-            this, &VaultWindow::onCustomContextMenu);
+    // Stato iniziale
+    ui->contentStack->setCurrentIndex(0);
+    setMenuVisible(true);
+    onPasswordsNavClicked(); // evidenzia Password
+    refreshList();
+    resetInactivityTimer();
 }
 
 VaultWindow::~VaultWindow()
@@ -98,7 +104,6 @@ VaultWindow::~VaultWindow()
 
 void VaultWindow::refreshList()
 {
-    // Riusiamo la stessa logica della ricerca
     onSearchTextChanged(ui->searchEdit->text());
 }
 
@@ -106,8 +111,7 @@ void VaultWindow::onAddPasswordClicked()
 {
     AddPasswordDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
-        PasswordEntry entry = dialog.resultEntry();
-        if (m_vault->addEntry(entry)) {
+        if (m_vault->addEntry(dialog.resultEntry())) {
             refreshList();
         } else {
             QMessageBox::critical(this, "Errore", "Impossibile salvare la password.");
@@ -122,7 +126,6 @@ void VaultWindow::onLogoutClicked()
     close();
 }
 
-
 void VaultWindow::resetInactivityTimer()
 {
     m_inactivityTimer.start(INACTIVITY_TIMEOUT_MS);
@@ -130,13 +133,10 @@ void VaultWindow::resetInactivityTimer()
 
 void VaultWindow::onInactivityTimeout()
 {
-    // Tempo scaduto → blocchiamo il vault
     m_vault->lock();
-
     QMessageBox::information(this, "Sessione scaduta",
                              "Sei stato disconnesso per inattività.");
-
-    close(); // torna al login
+    close();
 }
 
 void VaultWindow::mousePressEvent(QMouseEvent *event)
@@ -154,22 +154,17 @@ void VaultWindow::keyPressEvent(QKeyEvent *event)
 void VaultWindow::onSearchTextChanged(const QString &text)
 {
     ui->passwordList->clear();
-
     const QString search = text.trimmed().toLower();
-    const auto entries = m_vault->entries();
 
-    for (const PasswordEntry &entry : entries) {
-        // Cerca nel titolo, username e url
+    for (const PasswordEntry &entry : m_vault->entries()) {
         bool match = search.isEmpty()
-                     || entry.title().toLower().contains(search)
-                     || entry.username().toLower().contains(search)
-                     || entry.url().toLower().contains(search);
-
+        || entry.title().toLower().contains(search)
+            || entry.username().toLower().contains(search)
+            || entry.url().toLower().contains(search);
         if (match) {
             QString display = entry.title();
-            if (!entry.username().isEmpty()) {
+            if (!entry.username().isEmpty())
                 display += "  •  " + entry.username();
-            }
             ui->passwordList->addItem(display);
         }
     }
@@ -181,37 +176,27 @@ void VaultWindow::onCustomContextMenu(const QPoint &pos)
     if (!item) return;
 
     int row = ui->passwordList->row(item);
-    const auto entries = m_vault->entries();
-    if (row < 0 || row >= entries.size()) return;
 
-    // Dobbiamo trovare l'entry corretta anche con la ricerca attiva
-    // Per semplicità ricarichiamo tutte e filtriamo
     QString search = ui->searchEdit->text().trimmed().toLower();
-    QVector<PasswordEntry> visibleEntries;
-
-    for (const PasswordEntry &entry : entries) {
+    QVector<PasswordEntry> visible;
+    for (const PasswordEntry &e : m_vault->entries()) {
         bool match = search.isEmpty()
-        || entry.title().toLower().contains(search)
-            || entry.username().toLower().contains(search)
-            || entry.url().toLower().contains(search);
-        if (match) {
-            visibleEntries.append(entry);
-        }
+        || e.title().toLower().contains(search)
+            || e.username().toLower().contains(search)
+            || e.url().toLower().contains(search);
+        if (match) visible.append(e);
     }
+    if (row < 0 || row >= visible.size()) return;
 
-    if (row >= visibleEntries.size()) return;
-    PasswordEntry entry = visibleEntries.at(row);
+    PasswordEntry entry = visible.at(row);
 
-    // Creiamo il menu
     QMenu menu(this);
-
     QAction *copyUserAction = menu.addAction("Copia username");
     QAction *copyPassAction = menu.addAction("Copia password");
     menu.addSeparator();
     QAction *editAction = menu.addAction("Modifica");
     QAction *deleteAction = menu.addAction("Elimina");
 
-    // Stile scuro per il menu
     menu.setStyleSheet(
         "QMenu { background-color: #2c2c2e; color: white; border: 1px solid #3a3a3c; padding: 6px; }"
         "QMenu::item { padding: 8px 24px 8px 14px; border-radius: 6px; }"
@@ -224,40 +209,30 @@ void VaultWindow::onCustomContextMenu(const QPoint &pos)
 
     if (selected == copyUserAction) {
         QGuiApplication::clipboard()->setText(entry.username());
-    }
-    else if (selected == copyPassAction) {
+    } else if (selected == copyPassAction) {
         QGuiApplication::clipboard()->setText(entry.password());
-    }
-    else if (selected == editAction) {
+    } else if (selected == editAction) {
         AddPasswordDialog dialog(entry, this);
         if (dialog.exec() == QDialog::Accepted) {
-            if (m_vault->updateEntry(dialog.resultEntry())) {
+            if (m_vault->updateEntry(dialog.resultEntry()))
                 refreshList();
-            }
         }
-    }
-    else if (selected == deleteAction) {
+    } else if (selected == deleteAction) {
         auto reply = QMessageBox::question(
-            this,
-            "Conferma eliminazione",
+            this, "Conferma eliminazione",
             "Sei sicuro di voler eliminare \"" + entry.title() + "\"?",
-            QMessageBox::Yes | QMessageBox::No
-            );
-
+            QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-            if (m_vault->removeEntry(entry.id())) {
+            if (m_vault->removeEntry(entry.id()))
                 refreshList();
-            }
         }
     }
 }
-
 
 void VaultWindow::setMenuVisible(bool visible)
 {
     m_menuVisible = visible;
     ui->sideMenu->setVisible(visible);
-    ui->toggleMenuButton->setText(visible ? "☰" : "☰");
 }
 
 void VaultWindow::onToggleMenuClicked()
@@ -269,15 +244,32 @@ void VaultWindow::onToggleMenuClicked()
 void VaultWindow::onPasswordsNavClicked()
 {
     ui->contentStack->setCurrentIndex(0);
-    ui->passwordsNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 8px;");
-    ui->authenticatorNavButton->setStyleSheet("background-color: transparent; border-radius: 8px;");
+    ui->addPasswordButton->setVisible(true);
+
+    ui->passwordsNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 10px;");
+    ui->authenticatorNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
+    ui->settingsNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
     resetInactivityTimer();
 }
 
 void VaultWindow::onAuthenticatorNavClicked()
 {
     ui->contentStack->setCurrentIndex(1);
-    ui->authenticatorNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 8px;");
-    ui->passwordsNavButton->setStyleSheet("background-color: transparent; border-radius: 8px;");
+    ui->addPasswordButton->setVisible(false);
+
+    ui->passwordsNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
+    ui->authenticatorNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 10px;");
+    ui->settingsNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
+    resetInactivityTimer();
+}
+
+void VaultWindow::onSettingsNavClicked()
+{
+    ui->contentStack->setCurrentIndex(2);
+    ui->addPasswordButton->setVisible(false);
+
+    ui->passwordsNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
+    ui->authenticatorNavButton->setStyleSheet("background-color: transparent; border-radius: 10px;");
+    ui->settingsNavButton->setStyleSheet("background-color: #0a84ff; border-radius: 10px;");
     resetInactivityTimer();
 }

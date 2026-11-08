@@ -7,11 +7,17 @@
 
 #include "vaultmanager.h"
 
+
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class VaultWindow; }
 QT_END_NAMESPACE
 
+
+class SettingsPage;
 class AuthenticatorPage;
+
 
 class VaultWindow : public QMainWindow
 {
@@ -36,6 +42,8 @@ private slots:
     void onPasswordsNavClicked();
     void onAuthenticatorNavClicked();
 
+    void onSettingsNavClicked();
+
 private:
     void refreshList();
     void resetInactivityTimer();
@@ -50,6 +58,8 @@ private:
 
     AuthenticatorPage *m_authenticatorPage = nullptr;
     bool m_menuVisible = true;
+
+    SettingsPage *m_settingsPage = nullptr;
 };
 
 #endif // VAULTWINDOW_H
