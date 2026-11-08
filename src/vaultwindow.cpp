@@ -24,9 +24,8 @@ VaultWindow::VaultWindow(const QString &userEmail, VaultManager *vault, QWidget 
     ui->setupUi(this);
 
     // Pagina Authenticator
-    m_authenticatorPage = new AuthenticatorPage(this);
-    ui->contentStack->addWidget(m_authenticatorPage); // indice 1
-    // indice 0 = pagina password (quella già presente nel .ui)
+    m_authenticatorPage = new AuthenticatorPage(m_vault, this);
+    ui->contentStack->addWidget(m_authenticatorPage);
 
     // Menu laterale
     connect(ui->toggleMenuButton, &QPushButton::clicked,

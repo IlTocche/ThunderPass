@@ -9,179 +9,124 @@ QWidget {
     color: #ffffff;
 }
 QLabel#titleLabel {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 700;
 }
 QLabel#codeLabel {
-    font-size: 42px;
+    font-size: 40px;
     font-weight: 700;
     letter-spacing: 6px;
     color: #0a84ff;
 }
+QLabel#timerLabel {
+    font-size: 13px;
+    color: #98989f;
+}
 QPushButton {
     background-color: #0a84ff;
-    color: white;
+    color: #ffffff;
     border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+    border-radius: 10px;
+    padding: 7px 16px;
     font-size: 14px;
     font-weight: 600;
 }
-QPushButton:hover {
-    background-color: #0071e3;
+QPushButton:hover { background-color: #2b95ff; }
+QPushButton:pressed { background-color: #0066d6; }
+QPushButton#copyButton, QPushButton#deleteButton {
+    background-color: #2c2c2e;
 }
-QPushButton#copyButton {
+QPushButton#copyButton:hover, QPushButton#deleteButton:hover {
     background-color: #3a3a3c;
 }
-QPushButton#copyButton:hover {
-    background-color: #48484a;
+QListWidget {
+    background-color: #2c2c2e;
+    border: none;
+    border-radius: 12px;
+    padding: 6px;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
 }
+QListWidget::item {
+    padding: 12px 14px;
+    border-radius: 8px;
+}
+QListWidget::item:hover { background-color: #3a3a3c; }
+QListWidget::item:selected { background-color: #0a84ff; }
    </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>16</number>
-   </property>
-   <property name="leftMargin">
-    <number>32</number>
-   </property>
-   <property name="topMargin">
-    <number>28</number>
-   </property>
-   <property name="rightMargin">
-    <number>32</number>
-   </property>
-   <property name="bottomMargin">
-    <number>28</number>
-   </property>
+   <property name="spacing"><number>16</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+
    <item>
-    <widget class="QLabel" name="titleLabel">
-     <property name="text">
-      <string>Authenticator</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="headerLayout">
+     <item>
+      <widget class="QLabel" name="titleLabel">
+       <property name="text"><string>Authenticator</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="headerSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addButton">
+       <property name="text"><string>+ Aggiungi</string></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+      </widget>
+     </item>
+    </layout>
    </item>
+
    <item>
-    <widget class="QLabel" name="subtitleLabel">
-     <property name="text">
-      <string>Genera codici 2FA (compatibile con i siti che usano Google Authenticator, Authy, ecc.)</string>
-     </property>
-     <property name="styleSheet">
-      <string>color: #8e8e93; font-size: 13px;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="QListWidget" name="accountList"/>
    </item>
-   <item>
-    <spacer name="topSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>30</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+
    <item>
     <widget class="QLabel" name="codeLabel">
-     <property name="text">
-      <string>------</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
+     <property name="text"><string>------</string></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
     </widget>
    </item>
    <item>
     <widget class="QLabel" name="timerLabel">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
+     <property name="text"><string/></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
     </widget>
    </item>
+
    <item>
-    <spacer name="middleSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="buttonLayout">
+    <layout class="QHBoxLayout" name="actionsLayout">
      <item>
-      <spacer name="leftBtnSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
+      <spacer name="leftSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
       </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="copyButton">
-       <property name="text">
-        <string>Copia codice</string>
-       </property>
+       <property name="text"><string>Copia codice</string></property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="addSecretButton">
-       <property name="text">
-        <string>Aggiungi secret</string>
-       </property>
+      <widget class="QPushButton" name="deleteButton">
+       <property name="text"><string>Elimina</string></property>
       </widget>
      </item>
      <item>
-      <spacer name="rightBtnSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
+      <spacer name="rightSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
       </spacer>
      </item>
     </layout>
-   </item>
-   <item>
-    <spacer name="bottomSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
