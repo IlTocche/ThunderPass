@@ -25,9 +25,11 @@ public:
 signals:
     void themeChanged(bool dark);
     void skipLoginChanged(bool enabled);
+    void languageChanged(const QString &languageCode); // "it" oppure "en"
 
 private slots:
     void onThemeChanged();
+    void onLanguageChanged();
     void onSkipLoginToggled(bool checked);
     void onChangePasswordClicked();
 
